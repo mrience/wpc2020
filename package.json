@@ -1,0 +1,15 @@
+{
+  "name": "MediaUploadUI",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "Jakub Kanclerz",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "aws-amplify": "^2.2.6",
+    "aws-sdk": "^2.639.0"
+  }
+}
