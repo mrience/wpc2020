@@ -16,28 +16,29 @@ const registerRequest = {
 }
 
 const registerUser = (registerData) => {
-    userPool.signUp(
-        registerData.email,
-        registerData.password,
-        [
-            new CognitoUserAttribute({
-                'Name': 'website',
-                'Value': 'jkan.pl'
-            }),
-            new CognitoUserAttribute({
-                'Name': 'nickname',
-                'Value': 'kubus'
-            })
-        ],
-        null,
-        (err, result) => {
-            if (err) {
-                console.error(err);
+    return new Promise((resolve, onError) => {
+        userPool.signUp(
+            registerData.email,
+            registerData.password,
+            [
+                new CognitoUserAttribute({
+                    'Name': 'website',
+                    'Value': 'jkan.pl'
+                }),
+                new CognitoUserAttribute({
+                    'Name': 'nickname',
+                    'Value': 'kubus'
+                })
+            ],
+            null,
+            (err, result) => {
+                if (err) {
+                    onError(err);
+                }
+                resolve(result);
             }
-            
-            console.log(result);
-        }
-    )
+        )
+    })
 }
 
 const confirmRequest = {
@@ -46,32 +47,39 @@ const confirmRequest = {
 }
 
 const confirmAccount = (confirmRequest) => {
-    const cognitoUser = new CognitoUser({
-        Username: confirmRequest.username,
-        Pool: userPool
-    })
-    
-    cognitoUser.confirmRegistration(
-        confirmRequest.confirmationCode,
-        true,
-        (err, result) => {
-            if (err) {
-                console.log(err);
-                return;
+    return new Promise((resolve, onError) => {
+       const cognitoUser = new CognitoUser({
+            Username: confirmRequest.username,
+            Pool: userPool
+        })
+        
+        cognitoUser.confirmRegistration(
+            confirmRequest.confirmationCode,
+            true,
+            (err, result) => {
+                if (err) {
+                    onError(err);
+                    return;
+                }
+                resolve(result);
             }
-            console.log(result);
-        }
-    )
+        ) 
+    });
 }
 
 const registerButton = document.querySelector('.registerUser');
 registerButton.addEventListener('click', () => {
     console.log(`User ${registerRequest.email} is going to be registered`);
+    
     registerUser(registerRequest)
+        .then(result => console.log('All is fine, user registered'))
+        .catch(err => console.log('Sth is not YESS' + err.message))
 })
 
 const confirmButton = document.querySelector('.confirmUser');
 confirmButton.addEventListener('click', () => {
     console.log(`User ${confirmRequest.username} is going to be confirmed`);
-    confirmAccount(confirmRequest);
+    confirmAccount(confirmRequest)
+        .then(result => console.log('All is fine, user registered'))
+        .catch(err => console.log('Sth is not YESS' + err.message))
 })
