@@ -11,5 +11,10 @@
   "dependencies": {
     "aws-amplify": "^2.2.6",
     "aws-sdk": "^2.639.0"
+  },
+  "scripts": {
+    "hello": "echo 'Hello Jakub'",
+    "build": "yarn webpack",
+    "deploy": "./deploy.sh"
   }
 }
