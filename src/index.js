@@ -2,7 +2,8 @@ import {authCfg} from './env'
 import {
     CognitoUserPool,
     CognitoUserAttribute,
-    CognitoUser
+    CognitoUser,
+    AuthenticationDetails
 } from 'amazon-cognito-identity-js'
 
 const userPool = new CognitoUserPool({
@@ -48,7 +49,7 @@ const confirmRequest = {
 
 const confirmAccount = (confirmRequest) => {
     return new Promise((resolve, onError) => {
-       const cognitoUser = new CognitoUser({
+        const cognitoUser = new CognitoUser({
             Username: confirmRequest.username,
             Pool: userPool
         })
@@ -67,6 +68,32 @@ const confirmAccount = (confirmRequest) => {
     });
 }
 
+const loginRequest = {
+    username: registerRequest.email,
+    password: registerRequest.password
+}
+
+const login = (loginRequest) => {
+    return new Promise((resolve, onError) => {
+        const cognitoUser = new CognitoUser({
+            Username: loginRequest.username,
+            Pool: userPool
+        })
+    
+        cognitoUser.authenticateUser(
+            new AuthenticationDetails({
+                Username: loginRequest.username,
+                Password: loginRequest.password
+            }),
+            {
+                onSuccess: (result) => resolve(result),
+                onFailure: (err) => onError(err)
+            }
+        )
+    });
+}
+
+
 const registerButton = document.querySelector('.registerUser');
 registerButton.addEventListener('click', () => {
     console.log(`User ${registerRequest.email} is going to be registered`);
@@ -82,4 +109,11 @@ confirmButton.addEventListener('click', () => {
     confirmAccount(confirmRequest)
         .then(result => console.log('All is fine, user registered'))
         .catch(err => console.log('Sth is not YESS' + err.message))
+})
+
+const loginButton = document.querySelector('.loginUser');
+loginButton.addEventListener('click', () => {
+    login(loginRequest)
+        .then(result => console.log(result))
+        .catch(err => console.log('access deny' + err.message))
 })
