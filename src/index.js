@@ -11,7 +11,7 @@ const registerRequest = {
     password: '123qwe'
 }
 
-const registerUser(registerData) => {
+const registerUser = (registerData) => {
     userPool.signUp(
         registerData.email,
         registerData.password,
