@@ -212,7 +212,8 @@ const listFilesInBucket = () => {
 //Use credentials to list bucket items
 const listItemsInBucketButton = document.querySelector('.listItems');
 listItemsInBucketButton.addEventListener('click', () => {
-   listFilesInBucket(); 
+   listFilesInBucket();
+  console.log('my all file');
 });
 
 //upload files to own directory
