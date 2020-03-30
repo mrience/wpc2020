@@ -16,6 +16,7 @@
   "scripts": {
     "hello": "echo 'Hello Jakub'",
     "build": "yarn webpack",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "refresh": "git reset --hard; git pull origin master; yarn deploy"
   }
 }
