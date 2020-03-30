@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "aws-amplify": "^2.2.6",
-    "aws-sdk": "^2.639.0"
+    "aws-sdk": "^2.639.0",
+    "webpack-dev-server": "^3.10.3"
   },
   "scripts": {
     "hello": "echo 'Hello Jakub'",
