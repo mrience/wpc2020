@@ -1,0 +1,20 @@
+$progressBarHeight: 3rem;
+body {
+    background-color: #ccc;
+}
+
+.progress {
+    &__container {
+        height: $progressBarHeight;
+        background: gray;
+        display: flex;
+    }
+    
+    &__bar {
+        display: flex;
+        width: 0%;
+        background: yellow;
+        align-items: center;
+        justify-content: center;
+    }
+}
