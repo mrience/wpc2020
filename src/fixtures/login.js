@@ -1,11 +1,11 @@
 export const registerRequest = {
-    email: 'fnc86318@bcaoo.com',
-    password: '1234qwer'
+    email: 'lgu37330@eoopy.com',
+    password: '1234abcd'
 }
 
 export const confirmRequest = {
     username: registerRequest.email,
-    confirmationCode: '151678'
+    confirmationCode: '528785'
 }
 
 export const loginRequest = {

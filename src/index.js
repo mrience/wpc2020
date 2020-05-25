@@ -1,4 +1,4 @@
-import {authCfg, identityPoolId, credentialName, defaultRegion, myBucket} from './env'
+import {authCfg, identityPoolId, credentialName, defaultRegion, myBucket, apiUrl} from './env'
 
 AWS.config.region = defaultRegion;
 
@@ -64,8 +64,7 @@ const listFilesInBucket = () => {
         
         console.log(data);
     })
-}
-
+};
 
 //Use credentials to list bucket items
 const listItemsInBucketButton = document.querySelector('.listItems');
@@ -76,10 +75,17 @@ listItemsInBucketButton.addEventListener('click', () => {
 
 const uploadInput = document.querySelector('.upload__input');
 const uploadBtn = document.querySelector('.upload__confirm');
+const uploadedFilesListEl = document.querySelector('.uploadedFilesList');
 
-const progressBarEl = document.querySelector('.progress__bar');
+const httpUploadProgressHandler = (progress) => {
+    const progressBarEl = document.querySelector('.progress__bar');
+    const value = Math.round((progress.loaded / progress.total) * 100);
+    progressBarEl.style.width = `${value}%`;
+    progressBarEl.textContent = `${value} %`;
+}
+const consoleLogProgerssHandler = (progress) => console.log(process);
 
-const uploadToS3 = (file) => {
+const uploadToS3 = (file, progressHandler) => {
     const userId = AWS.config.credentials.identityId;
     const params = {
         Body: file,
@@ -95,72 +101,75 @@ const uploadToS3 = (file) => {
             }
             
             res(params.Key);
-        }).on('httpUploadProgress', (progress) => {
-            const value = Math.round((progress.loaded / progress.total) * 100);
-            progressBarEl.style.width = `${value}%`;
-            progressBarEl.textContent = `${value} %`;
-        })
+        }).on('httpUploadProgress', progressHandler);
     })
 }
-
 const getSignedURL = (key) => {
     const s3 = new S3();
     const params = {Bucket: myBucket, Key: key};
     return s3.getSignedUrl('getObject', params);
 }
-
 const createHtmlElFromString = (elementString) => {
     let parent = document.createElement('div');
     parent.innerHTML = elementString.trim();
     
     return parent.firstChild;
 }
-
-const uploadedFilesListEl = document.querySelector('.uploadedFilesList')
 const addToUploadedFilesList = (url) => {
     const image = `
         <li>
             <img height="128" src="${url}"/>
         </li>
     `;
-    uploadedFilesListEl.appendChild(createHtmlElFromString(image))
+    uploadedFilesListEl.appendChild(createHtmlElFromString(image));
 } 
 
+let photosToBeTransformed = [];
+
 uploadBtn.addEventListener('click', () => {
-    console.log(uploadInput.files);
-    
     if (!uploadInput.files.length > 0) {
         return;
     }
     
     const toBeUploadeFiles = [...uploadInput.files]
     toBeUploadeFiles.forEach((file, i) => {
-        uploadToS3(file)
+        uploadToS3(file, httpUploadProgressHandler)
+            .then(key => {
+                photosToBeTransformed = [...photosToBeTransformed, key];
+                return key;
+            })
             .then(res => getSignedURL(res))
             .then(url => addToUploadedFilesList(url))
             .finally(() => uploadInput.value = "")
             .catch(err => console.log(err))
     })
-    
 })
 
-//login +
-//test uprawnien do s3
-//upload files to own directory
-//s3 -> uek-krakow/{userId}/my/files.jpeg
-//s3 -> uek-krakow/{notMyId}/ <- should not be possible
-// let photos = []
-// photos.push({key: 'sadasdsadsadsa.jpeg'})
 
-// const orderAnimationRequest = {
-//     email: 'my_email',
-//     photos: [
-    
-//     ]
-// }
-//liste fotek które będą zamienione w video
-//onSuccessUplad do listy dodaj fotke -> lokalStorage -> dynamoDB 
-//api -> orderAnimation
-//transformacja video
-//push notification, email -> do usera
+const orderAnimation = (photos, email) => {
+    return auth.getAccessToken()
+        .then(token => {
+            return fetch(`${apiUrl}/orders-2`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    "photos": photos,
+                    "email": email
+                })
+            })
+        })
+};
 
+const orderAnimationBtn = document.querySelector('.orderAnimation');
+orderAnimationBtn.addEventListener('click', () => {
+    auth.refreshSession()
+        .then(user => orderAnimation(photosToBeTransformed, user.email))
+        .then(res => {
+            console.log('Hurra it works')
+            console.log(res)
+        })
+        .catch(e => console.log(e))
+});

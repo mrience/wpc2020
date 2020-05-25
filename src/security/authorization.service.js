@@ -25,11 +25,11 @@ export class AuthorizationService {
                 [
                     new CognitoUserAttribute({
                         'Name': 'website',
-                        'Value': 'jkan.pl'
+                        'Value': 'olaf.pl'
                     }),
                     new CognitoUserAttribute({
                         'Name': 'nickname',
-                        'Value': 'kubus'
+                        'Value': 'Olaf'
                     })
                 ],
                 null,
@@ -99,6 +99,24 @@ export class AuthorizationService {
                 }
             )
         });
+    }
+    
+    getAccessToken() {
+        return new Promise((res, error) => {
+            const cognitoUser = this.userPool.getCurrentUser();
+            
+            if (cognitoUser == null) {
+                error('user not authorized')
+            }
+            
+            cognitoUser.getSession((err, result) => {
+                if (err) {
+                    error(err);
+                }
+                
+                res(result.getIdToken().getJwtToken());
+            })
+        })
     }
     
     refreshSession() {
