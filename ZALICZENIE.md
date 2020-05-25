@@ -1,6 +1,6 @@
 # Zaliczenie przedmiotu Wirtualizacja i przetwarzanie w chmurze
 
-Autor: Jakub Kanclerz <nr albumu>
+Autor: Jakub Kanclerz (nr albumu) (grupa)
 
 ## Projekt, impplementacja oraz wdrożenie aplikacji w środowisku AWS
 
